@@ -13,7 +13,7 @@ public interface ITsscGameDAO {
 	public void delete(TsscGame game);
 	
 	public List<TsscGame> findByName(String name);
-	public List<TsscGame> findByDescription(String name);
+	public List<TsscGame> findByDescription(String description);
 	public List<TsscGame> findById(long id);
 	
 	//Search by range of date.

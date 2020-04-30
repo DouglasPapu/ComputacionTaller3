@@ -19,31 +19,31 @@ public class TsscTopicDAO implements ITsscTopicDAO{
 
 	@Override
 	public void save(TsscTopic topic) {
-		// TODO Auto-generated method stub
+		entityManager.persist(topic);
 		
 	}
 
 	@Override
 	public void update(TsscTopic topic) {
-		// TODO Auto-generated method stub
+		entityManager.merge(topic);
 		
 	}
 
 	@Override
 	public void delete(TsscTopic topic) {
-		// TODO Auto-generated method stub
+		entityManager.remove(topic);
 		
 	}
 
 	@Override
 	public List<TsscTopic> findByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		String cons = "Select a from TsscTopic a WHERE a.name = '"+name+"'";
+		return entityManager.createQuery(cons).getResultList();
 	}
 
 	@Override
-	public List<TsscTopic> findByDescription(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<TsscTopic> findByDescription(String description) {
+		String cons = "Select a from TsscTopic a WHERE a.description = '"+description+"'";
+		return entityManager.createQuery(cons).getResultList();
 	}
 }

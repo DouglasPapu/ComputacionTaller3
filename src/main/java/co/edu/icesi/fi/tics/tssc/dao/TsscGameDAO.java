@@ -21,49 +21,50 @@ public class TsscGameDAO implements ITsscGameDAO {
 
 	@Override
 	public void save(TsscGame game) {
-		// TODO Auto-generated method stub
+		entityManager.persist(game);
 		
 	}
 
 	@Override
 	public void update(TsscGame game) {
-		// TODO Auto-generated method stub
+		entityManager.merge(game);
 		
 	}
 
 	@Override
 	public void delete(TsscGame game) {
-		// TODO Auto-generated method stub
+		entityManager.remove(game);
 		
 	}
 
 	@Override
 	public List<TsscGame> findByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		String cons = "Select a from TsscGame a WHERE a.name = '"+name+"'";
+		return entityManager.createQuery(cons).getResultList();
 	}
 
 	@Override
-	public List<TsscGame> findByDescription(String name) {
-		// TODO Auto-generated method stub
+	public List<TsscGame> findByDescription(String description) {
+		//String cons = "Select a from TsscGame a WHERE a.description = '"+description+"'";
+		//return entityManager.createQuery(cons).getResultList();
 		return null;
 	}
 
 	@Override
 	public List<TsscGame> findById(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		String cons = "Select a from TsscGame a WHERE a.tsscTopic.id = '"+id+"'";
+		return entityManager.createQuery(cons).getResultList();
 	}
 
 	@Override
 	public List<TsscGame> findByDate(LocalDate scheduleDate) {
-		// TODO Auto-generated method stub
-		return null;
+		String cons = "Select a from TsscGame a WHERE a.scheduleDate = '"+scheduleDate+"'";
+		return entityManager.createQuery(cons).getResultList();
 	}
 
 	@Override
 	public List<TsscGame> findByDateHours(LocalDate scheduleDate, LocalTime scheduleTime) {
-		// TODO Auto-generated method stub
-		return null;
+		String cons = "Select a from TsscGame a WHERE a.scheduleDate = '"+scheduleDate+"'"+" AND a.scheduleTime = '"+scheduleTime+"'";
+		return entityManager.createQuery(cons).getResultList();
 	}
 }

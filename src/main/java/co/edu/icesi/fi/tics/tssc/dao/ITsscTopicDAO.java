@@ -11,5 +11,5 @@ public interface ITsscTopicDAO {
 	public void delete(TsscTopic topic);
 	
 	public List<TsscTopic> findByName(String name);
-	public List<TsscTopic> findByDescription(String name);
+	public List<TsscTopic> findByDescription(String description);
 }
