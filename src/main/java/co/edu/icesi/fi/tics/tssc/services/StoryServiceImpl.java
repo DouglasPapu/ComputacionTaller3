@@ -5,7 +5,10 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import co.edu.icesi.fi.tics.tssc.dao.ITsscGameDAO;
+import co.edu.icesi.fi.tics.tssc.dao.ITsscStoryDAO;
 import co.edu.icesi.fi.tics.tssc.exceptions.BusinessValueException;
 import co.edu.icesi.fi.tics.tssc.exceptions.CapacityException;
 import co.edu.icesi.fi.tics.tssc.exceptions.GameException;
@@ -21,24 +24,25 @@ import co.edu.icesi.fi.tics.tssc.repositories.IStoryRepository;
 @Service
 public class StoryServiceImpl implements StoryService {
 
-	private IGameRepository gameRepository;
+	private ITsscGameDAO gameDao;
 
-	private IStoryRepository storyRepository;
+	private ITsscStoryDAO storyDao;
 
 	@Autowired
-	public StoryServiceImpl(IGameRepository gameRepository, IStoryRepository storyRepository) {
+	public StoryServiceImpl(ITsscGameDAO gameDao, ITsscStoryDAO storyDao) {
 		// TODO Auto-generated constructor stub
-		this.gameRepository = gameRepository;
-		this.storyRepository = storyRepository;
+		this.gameDao = gameDao;
+		this.storyDao = storyDao;
 	}
 
 	@Override
+	@Transactional
 	public TsscStory saveStory(TsscStory nuevo, long id)
 			throws StoryException, GameException, BusinessValueException, InitialSprintException, PriorityException {
 		// TODO Auto-generated method stub
 		if (nuevo == null) {
 			throw new StoryException();
-		} else if (gameRepository.findById(id).isPresent() == false) {
+		} else if (gameDao.findById(id).isEmpty()) {
 			throw new GameException();
 
 		} else if (nuevo.getBusinessValue().compareTo(new BigDecimal(0)) == 0
@@ -54,8 +58,9 @@ public class StoryServiceImpl implements StoryService {
 			throw new PriorityException();
 
 		} else {
-			nuevo.setTsscGame(gameRepository.findById(id).get());
-			return storyRepository.save(nuevo);
+			nuevo.setTsscGame(gameDao.findById(id).get(0));
+		    storyDao.save(nuevo);
+		    return nuevo;
 		}
 	}
 
@@ -63,28 +68,30 @@ public class StoryServiceImpl implements StoryService {
 	public TsscStory editStory(TsscStory editado) throws StoryException {
 		if (editado == null) {
 			throw new StoryException();
-		} else if (storyRepository.findById(editado.getId()) == null) {
+		} else if (storyDao.findById(editado.getId()).get(0) == null) {
 			throw new StoryException();
 		} else {
 
-			return storyRepository.save(editado);
+			storyDao.save(editado);
+			return editado;
 
 		}
 	}
 
 	@Override
 	public Iterable<TsscStory> findAll() {
-		return storyRepository.findAll();
+		return storyDao.findAll();
 	}
 
 	@Override
 	public Optional<TsscStory> findById(long id) {
-		return storyRepository.findById(id);
+		 Optional<TsscStory> op = Optional.of(storyDao.findById(id).get(0));		 
+		 return op;
 	}
 
 	@Override
 	public void delete(TsscStory del) {
-		storyRepository.delete(del);
+		storyDao.delete(del);
 	}
 
 }

@@ -6,8 +6,10 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-
+import co.edu.icesi.fi.tics.tssc.dao.ITsscGameDAO;
+import co.edu.icesi.fi.tics.tssc.dao.ITsscTopicDAO;
 import co.edu.icesi.fi.tics.tssc.exceptions.CapacityException;
 import co.edu.icesi.fi.tics.tssc.exceptions.GameException;
 import co.edu.icesi.fi.tics.tssc.exceptions.SpringException;
@@ -22,25 +24,26 @@ import co.edu.icesi.fi.tics.tssc.repositories.ITopicRepository;
 @Service
 public class GameServiceImpl implements GameService {
 
-	private IGameRepository gameRepository;
+	private ITsscGameDAO gameDao;
 
-	private ITopicRepository topicRepository;
+	private ITsscTopicDAO topicDao;
 
 	@Autowired
-	public GameServiceImpl(IGameRepository gameRepository, ITopicRepository topicRepository) {
+	public GameServiceImpl(ITsscGameDAO gameDao, ITsscTopicDAO topicDao) {
 		// TODO Auto-generated constructor stub
-		this.gameRepository = gameRepository;
-		this.topicRepository = topicRepository;
+		this.gameDao = gameDao;
+		this.topicDao = topicDao;
 	}
 
 	@Override
+	@Transactional
 	public TsscGame saveGameWithTopic(TsscGame nuevo, long id)
 			throws CapacityException, TopicException, SpringException, GameException {
 
 		if (nuevo == null) {
 			throw new GameException();
 			
-		} else if (topicRepository.findById(id).isPresent() == false) {
+		} else if (topicDao.findById(id).isEmpty()) {
 			throw new TopicException();
 		} else if (nuevo.getNGroups() <= 0) {
 			throw new CapacityException();
@@ -48,13 +51,15 @@ public class GameServiceImpl implements GameService {
 			throw new SpringException();
 		} else {
 
-			nuevo.setTsscTopic(topicRepository.findById(id).get());
-			return gameRepository.save(nuevo);
+			nuevo.setTsscTopic(topicDao.findById(id).get(0));
+		    gameDao.save(nuevo);
+		    return nuevo;
 		}
 
 	}
 
 	@Override
+	@Transactional
 	public TsscGame saveGame(TsscGame nuevo) throws CapacityException, GameException, SpringException {
 		if (nuevo == null) {
 			throw new GameException();
@@ -63,22 +68,25 @@ public class GameServiceImpl implements GameService {
 		} else if (nuevo.getNSprints() <= 0) {
 			throw new SpringException();
 		} else {
-			return gameRepository.save(nuevo);
+			gameDao.save(nuevo);
+			return nuevo;
 		}
 	}
 
 	@Override
+	@Transactional
 	public TsscGame editGame(TsscGame editado) throws GameException, CapacityException, SpringException {
 		if (editado == null) {
 			throw new GameException();
-		} else if (gameRepository.findById(editado.getId()) == null) {
+		} else if (gameDao.findById(editado.getId()).isEmpty()) {
 			throw new GameException();
 		 } else if (editado.getNGroups() <= 0) {
 			throw new CapacityException();
 		} else if (editado.getNSprints() <= 0) {
 			throw new SpringException();
 		} else {
-			return gameRepository.save(editado);
+			 gameDao.save(editado);
+			return editado;
 		}
 
 	}
@@ -86,6 +94,7 @@ public class GameServiceImpl implements GameService {
 	// Punto d. Refactor
 
 	@Override
+	@Transactional
 	public TsscGame saveGameWithTopic2(TsscTopic nuevo)
 			throws CapacityException, TopicException, SpringException, GameException {
 
@@ -117,24 +126,27 @@ public class GameServiceImpl implements GameService {
 			game.setTsscTimecontrol(listTimecontrol);
 			
 			
-			return gameRepository.save(game);
+			gameDao.save(game);
+			
+			return game;
 		}
 
 	}
 
 	@Override
 	public Iterable<TsscGame> findAll() {
-		return gameRepository.findAll();
+		return gameDao.findAll();
 	}
 
 	@Override
 	public Optional<TsscGame> findById(long id) {
-		return gameRepository.findById(id);
+		Optional<TsscGame> op = Optional.of(gameDao.findById(id).get(0));
+		return op;
 	}
 
 	@Override
 	public void delete(TsscGame del) {
-       gameRepository.delete(del);
+       gameDao.delete(del);
 	}
 
 }

@@ -6,7 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import co.edu.icesi.fi.tics.tssc.dao.ITsscTopicDAO;
 import co.edu.icesi.fi.tics.tssc.exceptions.CapacityException;
 import co.edu.icesi.fi.tics.tssc.exceptions.SpringException;
 import co.edu.icesi.fi.tics.tssc.exceptions.TopicException;
@@ -17,15 +19,16 @@ import co.edu.icesi.fi.tics.tssc.repositories.ITopicRepository;
 @Service
 public class TopicServiceImpl implements TopicService {
 
-	public ITopicRepository repository;
+	public ITsscTopicDAO topicDao;
 
 	@Autowired
-	public TopicServiceImpl(ITopicRepository repository) {
-		this.repository = repository;
+	public TopicServiceImpl(ITsscTopicDAO topicDao) {
+		this.topicDao = topicDao;
 
 	}
 
 	@Override
+	@Transactional
 	public TsscTopic saveTopic(TsscTopic nuevo) throws CapacityException, TopicException, SpringException {
 
 		if (nuevo == null) {
@@ -39,19 +42,22 @@ public class TopicServiceImpl implements TopicService {
 			throw new SpringException();
 
 		} else {
-			return repository.save(nuevo);
+			
+		    topicDao.save(nuevo);
+			return nuevo;
 
 		}
 
 	}
 
 	@Override
+	@Transactional
 	public TsscTopic editTopic(TsscTopic editado) throws TopicException, CapacityException, SpringException {
 
 		if (editado == null) {
 			throw new TopicException();
 			
-		} else if (repository.findById(editado.getId()).isPresent() == false) {
+		} else if (topicDao.findById(editado.getId()).isEmpty()) {
 			
 			throw new TopicException();
 			
@@ -64,7 +70,8 @@ public class TopicServiceImpl implements TopicService {
 			throw new SpringException();
 
 		} else {
-			return repository.save(editado);
+		    topicDao.save(editado);
+		    return editado;
 
 		}
 
@@ -73,17 +80,18 @@ public class TopicServiceImpl implements TopicService {
 	@Override
 	public Iterable<TsscTopic> findAll() {
 		// TODO Auto-generated method stub
-		return repository.findAll();
+		return topicDao.findAll();
 	}
 
 	@Override
 	public Optional<TsscTopic> findById(long id) {
-		return repository.findById(id);
+		Optional<TsscTopic> op = Optional.of(topicDao.findById(id).get(0));
+		return op;
 	}
 
 	@Override
 	public void delete(TsscTopic del) {
-		repository.delete(del);
+		topicDao.delete(del);
 	}
 
 }

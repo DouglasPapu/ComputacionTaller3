@@ -2,7 +2,9 @@ package co.edu.icesi.fi.tics.tssc.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import co.edu.icesi.fi.tics.tssc.dao.ITsscAdminDAO;
 import co.edu.icesi.fi.tics.tssc.model.TsscAdmin;
 import co.edu.icesi.fi.tics.tssc.repositories.IAdminRepository;
 
@@ -10,26 +12,33 @@ import co.edu.icesi.fi.tics.tssc.repositories.IAdminRepository;
 public class AdminServiceImpl implements AdminService{
 	
 	
-	private IAdminRepository adminRepository;
+	//private IAdminRepository adminRepository;
+	
+	private ITsscAdminDAO adminDao;
 	
 	@Autowired
-	public AdminServiceImpl(IAdminRepository adminRepository) {
-		this.adminRepository = adminRepository;
+	public AdminServiceImpl(ITsscAdminDAO adminDao) {
+		this.adminDao= adminDao;
 	}
 
 	@Override
+	@Transactional
 	public TsscAdmin save(TsscAdmin nuevo) {
-		return adminRepository.save(nuevo);
+		adminDao.save(nuevo);
+		return nuevo;
 	}
 
 	@Override
+	@Transactional
 	public TsscAdmin edit(TsscAdmin editado) {
-		return adminRepository.save(editado);
+		 adminDao.update(editado);
+		 return editado;
 	}
 
 	@Override
+	@Transactional
 	public void delete(TsscAdmin delete) {
-		adminRepository.delete(delete);
+		adminDao.delete(delete);
 	}
 	
 	
