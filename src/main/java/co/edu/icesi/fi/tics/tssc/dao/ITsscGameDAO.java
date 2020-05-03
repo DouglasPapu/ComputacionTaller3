@@ -18,9 +18,22 @@ public interface ITsscGameDAO {
 	
 	//Search by range of date.
 	
-	public List<TsscGame> findByDate(LocalDate scheduleDate);
+	public List<TsscGame> findByDate(LocalDate scheduledDate);
 	
-	//Seatch by date and time.
+	//Search by date and time.
 	
-	public List<TsscGame> findByDateHours(LocalDate scheduleDate, LocalTime scheduleTime);
+	public List<TsscGame> findByDateHours(LocalDate scheduledDate, LocalTime scheduledTime);
+	
+	//Search topics by schudeled games.
+	
+	public List<Object[]> findTopicByScheduledGames(LocalDate scheduledDate);
+	
+	//Search games by stories
+	
+	public List<Object[]> findGameByStory(LocalDate scheduledDate);
+	
+	//Search games by Stories less than 10 or not timecontrols.
+	
+	public List<TsscGame> buscarJuegoConMenosDe10HistoriasOSinCronometros(LocalDate scheduledDate);
 }
+
