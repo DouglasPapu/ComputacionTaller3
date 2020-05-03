@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
 import co.edu.icesi.fi.tics.tssc.model.TsscGame;
+import co.edu.icesi.fi.tics.tssc.model.TsscTopic;
 
 @Repository
 @Scope("singleton")
@@ -74,14 +75,16 @@ public class TsscGameDAO implements ITsscGameDAO {
 	
 	@Override
 	public List<Object[]> findTopicByScheduledGames(LocalDate scheduledDate) {
-		String q = "select s.tsscTopic from TsscGame s where "
-				+ "date = s.scheduledDate ORDER BY s.scheduledTime ASC ";
-		Query query = entityManager.createQuery(q);
+	//	String q = "select s.tsscTopic, Count(s) from TsscGame s where "
+    //				+ "date = s.scheduledDate ORDER BY s.scheduledTime ASC ";
+		String q = "Select a, Count(s) FROM TsscTopic a JOIN TsscGame s ON a.id = s.id.tsscTopic.id WHERE s.scheduledDate = date"
+				+ "ORDER BY s.scheduledTime ASC";
+		
+		TypedQuery<Object[]> query = entityManager.createQuery(q, Object[].class);
 		query.setParameter("date", scheduledDate);
 
-		List<Object[]> results = query.getResultList();
 
-		return results;
+		return query.getResultList();
 	}
 	
 	//Mostrar los juegos que están programados para una fecha pero tienen menos de diez historias asociadas para una fecha dada o no tienen
@@ -89,7 +92,8 @@ public class TsscGameDAO implements ITsscGameDAO {
 	
 	public List<TsscGame> buscarJuegoConMenosDe10HistoriasOSinCronometros(LocalDate scheduledDate){
 		
-		String query = "Select a from TsscGame a Where "+ "(a.scheduledDate = scheduledDate AND a.tsscTimecontrols is null) OR "+
+		String query = "Select a from TsscGame a Where "+ "(a.scheduledDate = scheduledDate AND (a.tsscTimecontrols is null OR ("
+				+ "SELECT Count(b) FROM TsscTimecontrol b WHERE b.tsscGame.id = a.id) = 0) OR "+
 		"( SELECT Count(s) FROM TsscStory s WHERE s.tsscGame.id = a.id AND"+
 							  "s.tsscGame.scheduledDate = scheduledDate) < 10";
 		
@@ -99,6 +103,13 @@ public class TsscGameDAO implements ITsscGameDAO {
 		
 		return q.getResultList();
 	}
+
+	@Override
+	public List<TsscGame> findAll() {
+		String jpql = "Select a FROM TsscGame a";
+		return entityManager.createQuery(jpql, TsscGame.class).getResultList();
+	}
+
 	
 	
 	

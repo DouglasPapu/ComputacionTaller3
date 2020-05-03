@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -45,5 +46,19 @@ public class TsscTopicDAO implements ITsscTopicDAO{
 	public List<TsscTopic> findByDescription(String description) {
 		String cons = "Select a from TsscTopic a WHERE a.description = '"+description+"'";
 		return entityManager.createQuery(cons).getResultList();
+	}
+
+	@Override
+	public List<TsscTopic> findById(long id) {
+		String cons = "Select a from TsscTopic a WHERE a.id = '"+id+"'";
+		TypedQuery<TsscTopic> q = entityManager.createQuery(cons, TsscTopic.class);
+		return q.getResultList();
+	}
+
+	@Override
+	public List<TsscTopic> findAll() {
+		String cons = "Select a from TsscTopic a";
+		TypedQuery<TsscTopic> q = entityManager.createQuery(cons, TsscTopic.class);
+		return q.getResultList();
 	}
 }

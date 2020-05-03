@@ -9,6 +9,8 @@ public interface ITsscTopicDAO {
 	public void save(TsscTopic topic);
 	public void update(TsscTopic topic);
 	public void delete(TsscTopic topic);
+	public List<TsscTopic> findById(long id);
+	public List<TsscTopic> findAll();
 	
 	public List<TsscTopic> findByName(String name);
 	public List<TsscTopic> findByDescription(String description);

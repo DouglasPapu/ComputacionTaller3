@@ -124,6 +124,14 @@ public class TsscTopic implements Serializable {
 	public void setTsscTimecontrol(List<TsscTimecontrol> tsscTimecontrol) {
 		this.tsscTimecontrol = tsscTimecontrol;
 	}
+	
+	public List<TsscGame> getTsscGames() {
+		return this.tsscGames;
+	}
+
+	public void setTsscGames(List<TsscGame> tsscGames) {
+		this.tsscGames = tsscGames;
+	}
 
 	public TsscStory addTsscStory(TsscStory tsscStory) {
 		getTsscStories().add(tsscStory);
@@ -138,4 +146,7 @@ public class TsscTopic implements Serializable {
 
 		return tsscStory;
 	}
+	
+	
+	
 }

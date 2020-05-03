@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import co.edu.icesi.fi.tics.tssc.model.TsscGame;
+import co.edu.icesi.fi.tics.tssc.model.TsscTopic;
 
 public interface ITsscGameDAO {
 
@@ -15,6 +16,7 @@ public interface ITsscGameDAO {
 	public List<TsscGame> findByName(String name);
 	public List<TsscGame> findByDescription(String description);
 	public List<TsscGame> findById(long id);
+	public List<TsscGame> findAll();
 	
 	//Search by range of date.
 	
@@ -28,9 +30,6 @@ public interface ITsscGameDAO {
 	
 	public List<Object[]> findTopicByScheduledGames(LocalDate scheduledDate);
 	
-	//Search games by stories
-	
-	public List<Object[]> findGameByStory(LocalDate scheduledDate);
 	
 	//Search games by Stories less than 10 or not timecontrols.
 	
