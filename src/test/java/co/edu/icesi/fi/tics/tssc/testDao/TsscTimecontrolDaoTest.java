@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,6 @@ class TsscTimecontrolDaoTest {
 	public void setUp1() {
 
 		time1 = new TsscTimecontrol();
-		time1.setName("Cronograma Uno");
-
 		timeDao.save(time1);
 	}
 	
@@ -45,6 +44,8 @@ class TsscTimecontrolDaoTest {
 		timeDao.save(timeP);
 
 		assertNotNull(timeDao.findById(timeP.getId()).get(0));
+		
+		timeDao.delete(timeP);
 
 	}
 
@@ -55,10 +56,13 @@ class TsscTimecontrolDaoTest {
 		assertNotNull(timeDao);
 
 		TsscTimecontrol time2 = new TsscTimecontrol();
+		time2.setId(time1.getId());
 
 		timeDao.update(time2);
 
 		assertNotNull(timeDao.findById(time2.getId()).get(0));
+		
+		timeDao.delete(time1);
 	}
 
 	@Test
@@ -68,7 +72,6 @@ class TsscTimecontrolDaoTest {
 		assertNotNull(timeDao);
 		timeDao.delete(time1);
 		assertTrue(timeDao.findAll().size() == 0);
-
 	}
 
 }

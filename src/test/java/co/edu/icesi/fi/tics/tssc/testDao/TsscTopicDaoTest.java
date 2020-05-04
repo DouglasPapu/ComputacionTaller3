@@ -5,6 +5,7 @@ import static org.testng.Assert.assertEquals;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,17 +77,27 @@ public class TsscTopicDaoTest {
 		topic2 = new TsscTopic();
 		topic2.setDefaultGroups(4);
 		topic2.setDefaultSprints(4);
-		topic2.setName("topic1");
-		topic2.setGroupPrefix("Prefix1");
-		topic2.setDescription("Descripcion topic1");
+		topic2.setName("topic2");
+		topic2.setGroupPrefix("Prefix2");
+		topic2.setDescription("Descripcion topic2");
+		
+		game1.setTsscTopic(topic1);
+		game2.setTsscTopic(topic2);
+		
+		topic1.setTsscGames(new ArrayList<TsscGame>());
+		topic2.setTsscGames(new ArrayList<TsscGame>());
 		
 		topic1.getTsscGames().add(game1);
 		topic1.getTsscGames().add(game2);
 		
 		topic2.getTsscGames().add(game2);
 		
-		topicDao.save(topic2);		
-		topicDao.save(topic2);
+		gameDao.save(game1);
+		gameDao.save(game2);
+		
+		 topicDao.save(topic1);		
+		 topicDao.save(topic2);
+
 		
 	}
 
@@ -146,8 +157,11 @@ public class TsscTopicDaoTest {
 	@Test
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void testFindByNameTopic() {
-	  setUp1();
 	  assertNotNull(topicDao);
+	  gameDao.deleteAll();
+	  topicDao.deleteAll();
+	  setUp1();
+	  
 	
 	  assertTrue(topicDao.findByName("topic1").size() == 1);
 	}
@@ -156,8 +170,11 @@ public class TsscTopicDaoTest {
 	@Test
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void testFindByDescriptionTopic() {
-	  setUp1();
-	  assertNotNull(topicDao);
+		assertNotNull(topicDao);
+		gameDao.deleteAll();
+		topicDao.deleteAll();
+	     setUp1();
+	  
 	  
 	  assertTrue(topicDao.findByDescription("Descripcion topic1").size() == 1);
 		
@@ -169,14 +186,19 @@ public class TsscTopicDaoTest {
 	public void testFindTopicByScheduledGames() {
 		
 		try {
-		escenario2();
-		
+			
+		assertNotNull(topicDao);
 		assertNotNull(gameDao);
+		topicDao.deleteAll();
+		gameDao.deleteAll();
 		
-		assertNotNull(gameDao.findTopicByScheduledGames(LocalDate.of(2020, 12, 14)).get(0));
+		escenario2();
+
+		assertEquals(2, gameDao.findTopicByScheduledGames(LocalDate.of(2020, 12, 14)).size());
 		
 		}catch(Exception e) {
 			
+			e.printStackTrace();
 			fail();
 		}
 		

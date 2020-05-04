@@ -46,7 +46,7 @@ class TsscStoryDaoTest {
 		TsscStory storyP = new TsscStory();
 		storyDao.save(storyP);
 
-		assertNotNull(storyDao.findById(storyP.getId()).get(0));
+		assertTrue(storyDao.findById(storyP.getId()).size() == 1);
 
 	}
 
@@ -57,10 +57,11 @@ class TsscStoryDaoTest {
 		assertNotNull(storyDao);
 
 		TsscStory story2 = new TsscStory();
-
+		story2.setId(story1.getId());
+     
 		storyDao.update(story2);
 
-		assertNotNull(storyDao.findById(story2.getId()).get(0));
+		assertTrue(storyDao.findById(story2.getId()).isEmpty() == false);
 	}
 
 	@Test

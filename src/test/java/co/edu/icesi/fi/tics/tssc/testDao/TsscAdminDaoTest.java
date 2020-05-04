@@ -35,6 +35,8 @@ class TsscAdminDaoTest {
 
 		admin1 = new TsscAdmin();
 		admin1.setUser("Douglas");
+		admin1.setSuperAdmin("admin");
+		admin1.setPassword("{noop}123");
 
 		adminDao.save(admin1);
 	}
@@ -46,9 +48,14 @@ class TsscAdminDaoTest {
 		assertNotNull(adminDao);
 
 		TsscAdmin adminP = new TsscAdmin();
+		adminP.setUser("Lopez");
+		adminP.setSuperAdmin("superadmin");
+		adminP.setPassword("{noop}123");
+		
 		adminDao.save(adminP);
 
-		assertNotNull(adminDao.findById(adminP.getId()).get(0));
+		assertNotNull(adminDao.findAll().size() == 3); //Deberían haber 3, ya que en la base de Datos hay dos instaciados
+														//Instanciados en la clase(main) Application.
 
 	}
 
@@ -59,6 +66,10 @@ class TsscAdminDaoTest {
 		assertNotNull(adminDao);
 
 		TsscAdmin admin2 = new TsscAdmin();
+		admin2.setId(admin1.getId());
+		admin2.setUser("Mena");
+		admin2.setSuperAdmin("admin");
+		admin2.setPassword("{noop}123");
 
 		adminDao.update(admin2);
 
@@ -71,7 +82,9 @@ class TsscAdminDaoTest {
 		setUp1();
 		assertNotNull(adminDao);
 		adminDao.delete(admin1);
-		assertTrue(adminDao.findAll().size() == 0);
+		
+		assertEquals(2, adminDao.findAll().size()); //Son 2 porque ya en el Application existen dos instanciados. 
+												  	// Son los que están en uso para el login de la página.
 
 	}
 

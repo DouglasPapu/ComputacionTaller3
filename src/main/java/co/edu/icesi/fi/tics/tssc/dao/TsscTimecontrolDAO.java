@@ -32,14 +32,13 @@ public class TsscTimecontrolDAO implements ITsscTimecontrolDAO{
 	@Override
 	public void delete(TsscTimecontrol time) {
 		entityManager.remove(time);
-		
 	}
 
 	@Override
 	public List<TsscTimecontrol> findById(long id) {
-		String cons = "Select a from TsscTimecontrol a WHERE a.id = id";
+		String cons = "Select a from TsscTimecontrol a WHERE a.id = :d";
 		TypedQuery<TsscTimecontrol> q = entityManager.createQuery(cons, TsscTimecontrol.class);
-		q.setParameter("id", id);
+		q.setParameter("d", id);
 		return q.getResultList();
 	}
 
@@ -48,5 +47,11 @@ public class TsscTimecontrolDAO implements ITsscTimecontrolDAO{
 		String cons = "Select a from TsscTimecontrol a";
 		TypedQuery<TsscTimecontrol> q = entityManager.createQuery(cons, TsscTimecontrol.class);
 		return q.getResultList();
+	}
+
+	@Override
+	public void deleteAll() {
+		String jpql = "Delete From TsscTimecontrol";
+		entityManager.createQuery(jpql).executeUpdate();		
 	}
 }

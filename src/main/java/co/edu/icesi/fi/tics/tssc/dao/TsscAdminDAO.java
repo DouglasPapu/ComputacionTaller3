@@ -38,9 +38,8 @@ public class TsscAdminDAO implements ITsscAdminDAO{
 
 	@Override
 	public List<TsscAdmin> findById(long id) {
-		String cons = "Select a from TsscAdmin a WHERE a.id = id";
-		TypedQuery<TsscAdmin> q = entityManager.createQuery(cons, TsscAdmin.class);
-		q.setParameter("id", id);
+		String cons = "Select a from TsscAdmin a WHERE a.id = :d";
+		TypedQuery<TsscAdmin> q = entityManager.createQuery(cons, TsscAdmin.class).setParameter("d", id);
 		return q.getResultList();
 	}
 

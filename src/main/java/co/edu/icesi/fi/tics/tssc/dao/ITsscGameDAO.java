@@ -12,10 +12,12 @@ public interface ITsscGameDAO {
 	public void save(TsscGame game);
 	public void update(TsscGame game);
 	public void delete(TsscGame game);
+	public void deleteAll();
+	public List<TsscGame> findById(long id);
 	
 	public List<TsscGame> findByName(String name);
 	public List<TsscGame> findByDescription(String description);
-	public List<TsscGame> findById(long id);
+	public List<TsscGame> findByIdByTopic(long id);
 	public List<TsscGame> findAll();
 	
 	//Search by range of date.

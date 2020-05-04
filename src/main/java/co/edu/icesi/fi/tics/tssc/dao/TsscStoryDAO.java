@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.hibernate.context.spi.CurrentSessionContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import co.edu.icesi.fi.tics.tssc.model.TsscStory;
@@ -37,9 +38,9 @@ public class TsscStoryDAO implements ITsscStoryDAO {
 
 	@Override
 	public List<TsscStory> findById(long id) {
-		String cons = "Select a from TsscStory a WHERE a.id = id";
-		TypedQuery<TsscStory> q = entityManager.createQuery(cons, TsscStory.class);
-		q.setParameter("id", id);
+		String cons = "Select a from TsscStory a WHERE a.id = :f";
+		TypedQuery<TsscStory> q = entityManager.createQuery(cons, TsscStory.class)
+		.setParameter("f", id);
 		return q.getResultList();
 	}
 
@@ -48,5 +49,11 @@ public class TsscStoryDAO implements ITsscStoryDAO {
 		String cons = "Select a from TsscStory a";
 		TypedQuery<TsscStory> q = entityManager.createQuery(cons, TsscStory.class);
 		return q.getResultList();
+	}
+
+	@Override
+	public void deleteAll() {
+		String jpql = "Delete From TsscStory";
+		entityManager.createQuery(jpql).executeUpdate();
 	}
 }

@@ -54,9 +54,10 @@ public class TsscGameDAO implements ITsscGameDAO {
 	}
 
 	@Override
-	public List<TsscGame> findById(long id) {
-		String cons = "Select a from TsscGame a WHERE a.tsscTopic.id = '"+id+"'";
-		return entityManager.createQuery(cons).getResultList();
+	public List<TsscGame> findByIdByTopic(long id) {
+		String cons = "Select a From TsscGame a WHERE a.tsscTopic.id =:d";
+		TypedQuery<TsscGame> q = entityManager.createQuery(cons, TsscGame.class).setParameter("d", id);
+		return q.getResultList();
 	}
 
 	@Override
@@ -67,21 +68,29 @@ public class TsscGameDAO implements ITsscGameDAO {
 
 	@Override
 	public List<TsscGame> findByDateHours(LocalDate scheduledDate, LocalTime scheduledTime) {
-		String cons = "Select a from TsscGame a WHERE a.scheduledDate = '"+scheduledDate+"'"+" AND a.scheduledTime = '"+scheduledTime+"'";
-		return entityManager.createQuery(cons).getResultList();
+		String cons = "Select a from TsscGame a WHERE a.scheduledDate = :scheduledDate AND a.scheduledTime = :scheduledTime";
+		
+		TypedQuery<TsscGame> q = entityManager.createQuery(cons, TsscGame.class).setParameter("scheduledDate", scheduledDate)
+				.setParameter("scheduledTime", scheduledTime);
+		
+		return  q.getResultList();
 	}
 
 	//Método que se encarga de encontrar los topics que están asociados a un juego programado en una fecha, ordenados por hora.
 	
 	@Override
 	public List<Object[]> findTopicByScheduledGames(LocalDate scheduledDate) {
-	//	String q = "select s.tsscTopic, Count(s) from TsscGame s where "
-    //				+ "date = s.scheduledDate ORDER BY s.scheduledTime ASC ";
-		String q = "Select a, Count(s) FROM TsscTopic a JOIN TsscGame s ON a.id = s.id.tsscTopic.id WHERE s.scheduledDate = date"
-				+ "ORDER BY s.scheduledTime ASC";
+
+//		String q = "Select a, Count(s) FROM TsscTopic a JOIN TsscGame s ON a.id = s.tsscTopic.id ("
+//				+ " WHERE s.scheduledDate = :date)"
+//				+ " ORDER BY s.scheduledTime ASC";
+//		String q = "Select a, Count(s) FROM TsscTopic a JOIN TsscGame s ON a.id = s.tsscTopic.id ("
+//		+ " AND s.scheduledDate = :date)"
+//		+ " group by a.tsscTopic ORDER BY s.scheduledTime ASC";
 		
-		TypedQuery<Object[]> query = entityManager.createQuery(q, Object[].class);
-		query.setParameter("date", scheduledDate);
+	String q = "Select s.tsscTopic, count(s) from TsscGame s where :date = s.scheduledDate group by s.tsscTopic ORDER BY s.scheduledTime ASC ";
+		
+		TypedQuery<Object[]> query = entityManager.createQuery(q, Object[].class).setParameter("date", scheduledDate);
 
 
 		return query.getResultList();
@@ -92,14 +101,11 @@ public class TsscGameDAO implements ITsscGameDAO {
 	
 	public List<TsscGame> buscarJuegoConMenosDe10HistoriasOSinCronometros(LocalDate scheduledDate){
 		
-		String query = "Select a from TsscGame a Where "+ "(a.scheduledDate = scheduledDate AND (a.tsscTimecontrols is null OR ("
-				+ "SELECT Count(b) FROM TsscTimecontrol b WHERE b.tsscGame.id = a.id) = 0) OR "+
-		"( SELECT Count(s) FROM TsscStory s WHERE s.tsscGame.id = a.id AND"+
-							  "s.tsscGame.scheduledDate = scheduledDate) < 10";
+		String query = "Select a from TsscGame a Where "+ "(a.scheduledDate =:scheduledDate AND (("
+				+ "(SELECT Count(b) FROM TsscTimecontrol b WHERE b.tsscGame.id = a.id) = 0) OR "+
+		"(SELECT Count(s) FROM TsscStory s WHERE s.tsscGame.id = a.id ) < 10))";
 		
-		TypedQuery<TsscGame> q = entityManager.createQuery(query, TsscGame.class);
-		
-		q.setParameter("scheduledDate", scheduledDate);
+		TypedQuery<TsscGame> q = entityManager.createQuery(query, TsscGame.class).setParameter("scheduledDate", scheduledDate);
 		
 		return q.getResultList();
 	}
@@ -108,6 +114,20 @@ public class TsscGameDAO implements ITsscGameDAO {
 	public List<TsscGame> findAll() {
 		String jpql = "Select a FROM TsscGame a";
 		return entityManager.createQuery(jpql, TsscGame.class).getResultList();
+	}
+	
+	@Override
+	public void deleteAll() {
+		String jpql = "Delete From TsscGame";
+		entityManager.createQuery(jpql).executeUpdate();
+		
+	}
+
+	@Override
+	public List<TsscGame> findById(long id) {
+		String cons = "Select a From TsscGame a WHERE a.id =:d";
+		TypedQuery<TsscGame> q = entityManager.createQuery(cons, TsscGame.class).setParameter("d", id);
+		return q.getResultList();
 	}
 
 	

@@ -44,8 +44,9 @@ public class TsscTopicDAO implements ITsscTopicDAO{
 
 	@Override
 	public List<TsscTopic> findByDescription(String description) {
-		String cons = "Select a from TsscTopic a WHERE a.description = '"+description+"'";
-		return entityManager.createQuery(cons).getResultList();
+		String cons = "Select a from TsscTopic a WHERE a.description = :description";
+		  TypedQuery<TsscTopic> q = entityManager.createQuery(cons, TsscTopic.class).setParameter("description", description);
+		return q.getResultList();
 	}
 
 	@Override
@@ -60,5 +61,12 @@ public class TsscTopicDAO implements ITsscTopicDAO{
 		String cons = "Select a from TsscTopic a";
 		TypedQuery<TsscTopic> q = entityManager.createQuery(cons, TsscTopic.class);
 		return q.getResultList();
+	}
+
+	@Override
+	public void deleteAll() {
+		String jpql = "Delete From TsscTopic";
+		entityManager.createQuery(jpql).executeUpdate();
+		
 	}
 }

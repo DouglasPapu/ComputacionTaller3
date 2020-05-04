@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import co.edu.icesi.fi.tics.tssc.TallerPersistenciaApplication;
 import co.edu.icesi.fi.tics.tssc.dao.ITsscGameDAO;
+import co.edu.icesi.fi.tics.tssc.dao.ITsscStoryDAO;
+import co.edu.icesi.fi.tics.tssc.dao.ITsscTimecontrolDAO;
 import co.edu.icesi.fi.tics.tssc.model.TsscGame;
 import co.edu.icesi.fi.tics.tssc.model.TsscStory;
 import co.edu.icesi.fi.tics.tssc.model.TsscTimecontrol;
@@ -33,6 +35,12 @@ public class TsscGameDaoTest {
 
 	@Autowired
 	private ITsscGameDAO gameDao;
+	
+	@Autowired
+	private ITsscStoryDAO storyDao;
+	
+	@Autowired
+	private ITsscTimecontrolDAO timeDao;
 
 	private TsscGame game1;
 
@@ -97,6 +105,9 @@ public class TsscGameDaoTest {
 		story2.setInitialSprint(new BigDecimal(12));
 		story2.setPriority(new BigDecimal(10));
 		story2.setBusinessValue(new BigDecimal(5));
+		
+		game1.setTsscStories(new ArrayList<TsscStory>());
+		game2.setTsscStories(new ArrayList<TsscStory>());
 
 		game1.getTsscStories().add(story1);
 		game1.getTsscStories().add(story2);
@@ -134,21 +145,31 @@ public class TsscGameDaoTest {
 		story2.setInitialSprint(new BigDecimal(12));
 		story2.setPriority(new BigDecimal(10));
 		story2.setBusinessValue(new BigDecimal(5));
+		
+		game1.setTsscStories(new ArrayList<TsscStory>());
+		game2.setTsscStories(new ArrayList<TsscStory>());
 
 		game1.getTsscStories().add(story1);
 		game1.getTsscStories().add(story2);
 
 		gameDao.save(game1);
 
-		for (int i = 0; i < 11; i++) {
+		for (int i = 0; i < 12; i++) {
 
-			game2.getTsscStories().add(new TsscStory());
+			TsscStory poo = new TsscStory();
+			poo.setNumber(new BigDecimal(1011+i));
+			poo.setDescription("Soy una historia"+i);
+			poo.setInitialSprint(new BigDecimal(12+i));
+			poo.setPriority(new BigDecimal(10+i));
+			poo.setBusinessValue(new BigDecimal(5+i));
+			poo.setTsscGame(game2);
+			storyDao.save(poo);
 
 		}
 
-		List<TsscTimecontrol> cronograma = new ArrayList<TsscTimecontrol>();
-		cronograma.add(new TsscTimecontrol());
-		game2.setTsscTimecontrol(cronograma);
+		TsscTimecontrol poo2 = new TsscTimecontrol();
+		poo2.setTsscGame(game2);
+		timeDao.save(poo2);
 
 		gameDao.save(game2);
 
@@ -158,6 +179,9 @@ public class TsscGameDaoTest {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void testSaveGame() {
 		assertNotNull(gameDao);
+		storyDao.deleteAll();
+		timeDao.deleteAll();
+		gameDao.deleteAll();
 
 		TsscGame gameP = new TsscGame();
 		gameP.setName("GameP");
@@ -166,9 +190,8 @@ public class TsscGameDaoTest {
 		gameP.setScheduledDate(LocalDate.of(2020, 04, 27));
 		gameDao.save(gameP);
 
-		assertNotNull(gameDao.findById(gameP.getId()));
+		assertNotNull(gameDao.findById(gameP.getId()).get(0));
 		assertEquals("GameP", gameDao.findById(gameP.getId()).get(0).getName());
-
 	}
 
 	@Test
@@ -186,15 +209,22 @@ public class TsscGameDaoTest {
 		gameDao.update(game2);
 
 		assertNotNull(gameDao.findByName("Juego2"));
+		
+		gameDao.delete(game1);
+		
 	}
 
 	@Test
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void testDeleteGame() {
-		setUp1();
 		assertNotNull(gameDao);
+		storyDao.deleteAll();
+		timeDao.deleteAll();
+		gameDao.deleteAll();
+		setUp1();		
 		gameDao.delete(game1);
-		assertTrue(gameDao.findAll().size() == 0);
+		//assertTrue(gameDao.findAll().size() == 0);
+		assertEquals(0, gameDao.findAll().size());
 
 	}
 
@@ -238,6 +268,9 @@ public class TsscGameDaoTest {
 			List<TsscGame> juegos = gameDao.findByDate(LocalDate.of(2020, 12, 14));
 
 			assertTrue(juegos.size() == 1);
+			
+			gameDao.delete(game1);
+			
 		} catch (Exception e) {
 			fail();
 		}
@@ -247,13 +280,17 @@ public class TsscGameDaoTest {
 	@Test
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void testFindByDateHours() {
-		escenario2();
 		assertNotNull(gameDao);
+		storyDao.deleteAll();
+		timeDao.deleteAll();
+		gameDao.deleteAll();
+		escenario2();
+		
 
 		try {
 			List<TsscGame> juegos = gameDao.findByDateHours(LocalDate.of(2020, 12, 14), LocalTime.of(10, 15));
 
-			assertTrue(juegos.size() == 1);
+			assertEquals(1,juegos.size());
 		} catch (Exception e) {
 
 			fail();
@@ -266,8 +303,12 @@ public class TsscGameDaoTest {
 	@Test
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void testEncontrarJuegoConMenosDe10Historias() {
-		escenario3();
 		assertNotNull(gameDao);
+		storyDao.deleteAll();
+		timeDao.deleteAll();
+		gameDao.deleteAll();
+		escenario3();
+		
 
 		List<TsscGame> juegos = gameDao.buscarJuegoConMenosDe10HistoriasOSinCronometros(LocalDate.of(2020, 12, 14));
 
@@ -283,12 +324,16 @@ public class TsscGameDaoTest {
 	@Test
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void testEncontrarJuegoSinCronograma() {
-		escenario4();
 		assertNotNull(gameDao);
+		storyDao.deleteAll();
+		timeDao.deleteAll();
+		gameDao.deleteAll();
+		escenario4();
+
 
 		List<TsscGame> juegos = gameDao.buscarJuegoConMenosDe10HistoriasOSinCronometros(LocalDate.of(2020, 12, 14));
 
-		if (juegos.size() == 1 && juegos != null) {
+		if (juegos.size() > 0 && juegos != null) {
 
 			assertEquals(1, juegos.size());
 
