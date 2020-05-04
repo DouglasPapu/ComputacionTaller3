@@ -61,9 +61,11 @@ public class TsscGameDAO implements ITsscGameDAO {
 	}
 
 	@Override
-	public List<TsscGame> findByDate(LocalDate scheduledDate) {
-		String cons = "Select a from TsscGame a WHERE a.scheduledDate = '"+scheduledDate+"'";
-		return entityManager.createQuery(cons).getResultList();
+	public List<TsscGame> findByDate(LocalDate initialDate, LocalDate finalDate) {
+		String cons = "Select a from TsscGame a WHERE a.scheduledDate BETWEEN :iD AND :fD";
+		
+		TypedQuery<TsscGame> q = entityManager.createQuery(cons, TsscGame.class).setParameter("iD", initialDate).setParameter("fD", finalDate);
+		return q.getResultList();
 	}
 
 	@Override
@@ -91,7 +93,6 @@ public class TsscGameDAO implements ITsscGameDAO {
 	String q = "Select s.tsscTopic, count(s) from TsscGame s where :date = s.scheduledDate group by s.tsscTopic ORDER BY s.scheduledTime ASC ";
 		
 		TypedQuery<Object[]> query = entityManager.createQuery(q, Object[].class).setParameter("date", scheduledDate);
-
 
 		return query.getResultList();
 	}

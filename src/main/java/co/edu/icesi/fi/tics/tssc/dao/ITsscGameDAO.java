@@ -22,7 +22,7 @@ public interface ITsscGameDAO {
 	
 	//Search by range of date.
 	
-	public List<TsscGame> findByDate(LocalDate scheduledDate);
+	public List<TsscGame> findByDate(LocalDate initialDate, LocalDate finalDate);
 	
 	//Search by date and time.
 	

@@ -260,14 +260,16 @@ public class TsscGameDaoTest {
 
 	@Test
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public void testFindByDate() {
-		escenario2();
+	public void testFindByRangeDate() {
 		assertNotNull(gameDao);
+		gameDao.deleteAll();
+		escenario2();
+		
 
 		try {
-			List<TsscGame> juegos = gameDao.findByDate(LocalDate.of(2020, 12, 14));
+			List<TsscGame> juegos = gameDao.findByDate(LocalDate.of(2020, 01, 01), LocalDate.of(2020, 12, 31));
 
-			assertTrue(juegos.size() == 1);
+			assertEquals(1, juegos.size());
 			
 			gameDao.delete(game1);
 			
