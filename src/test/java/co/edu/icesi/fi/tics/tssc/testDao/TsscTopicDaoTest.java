@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,14 +58,14 @@ public class TsscTopicDaoTest {
 		game1.setNGroups(8);
 		game1.setNSprints(8);
 		game1.setScheduledDate(LocalDate.of(2020, 12, 14));
-		game1.setScheduledTime(LocalTime.of(10, 5));
+		game1.setScheduledTime(LocalTime.of(13, 5));
 
 		TsscGame game2 = new TsscGame();
 		game2.setName("Juego2");
 		game2.setNGroups(1);
 		game2.setNSprints(1);
 		game2.setScheduledDate(LocalDate.of(2020, 12, 14));
-		game2.setScheduledTime(LocalTime.of(5, 10));
+		game2.setScheduledTime(LocalTime.of(15, 10));
 		
 		
 		topic1 = new TsscTopic();
@@ -90,7 +91,7 @@ public class TsscTopicDaoTest {
 		topic1.getTsscGames().add(game1);
 		topic1.getTsscGames().add(game2);
 		
-		topic2.getTsscGames().add(game2);
+		topic2.getTsscGames().add(game1);
 		
 		gameDao.save(game1);
 		gameDao.save(game2);
@@ -100,6 +101,7 @@ public class TsscTopicDaoTest {
 
 		
 	}
+
 
 	
 	@Test
@@ -201,6 +203,35 @@ public class TsscTopicDaoTest {
 			e.printStackTrace();
 			fail();
 		}
+		
+	}
+	
+	@Test
+	@DisplayName("Test Verificar ordenamiento por horas")
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	public void testFindByTopicByScheduledGamesOrganizedByHours() {
+		
+		try {
+			
+			assertNotNull(topicDao);
+			assertNotNull(gameDao);
+			topicDao.deleteAll();
+			gameDao.deleteAll();
+			
+			escenario2();
+			
+			//Debido al esceneario 2 debería guardar el topic1 de primero.
+			
+			TsscTopic prueba = (TsscTopic) gameDao.findTopicByScheduledGames(LocalDate.of(2020, 12, 14)).get(0)[0];
+			
+			assertEquals(topic1.getName(), prueba.getName());
+			
+			}catch(Exception e) {
+				
+				e.printStackTrace();
+				fail();
+			}
+		
 		
 	}
 	

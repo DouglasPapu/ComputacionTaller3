@@ -47,13 +47,6 @@ public class TsscGameDAO implements ITsscGameDAO {
 	}
 
 	@Override
-	public List<TsscGame> findByDescription(String description) {
-		//String cons = "Select a from TsscGame a WHERE a.description = '"+description+"'";
-		//return entityManager.createQuery(cons).getResultList();
-		return null;
-	}
-
-	@Override
 	public List<TsscGame> findByIdByTopic(long id) {
 		String cons = "Select a From TsscGame a WHERE a.tsscTopic.id =:d";
 		TypedQuery<TsscGame> q = entityManager.createQuery(cons, TsscGame.class).setParameter("d", id);

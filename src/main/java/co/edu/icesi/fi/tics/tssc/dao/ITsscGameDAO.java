@@ -16,7 +16,6 @@ public interface ITsscGameDAO {
 	public List<TsscGame> findById(long id);
 	
 	public List<TsscGame> findByName(String name);
-	public List<TsscGame> findByDescription(String description);
 	public List<TsscGame> findByIdByTopic(long id);
 	public List<TsscGame> findAll();
 	
